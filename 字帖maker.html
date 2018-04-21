@@ -115,9 +115,9 @@
         //准备页面
         var strOptions = "";
         var MyURL = '';
-        var MyName = "字帖"+new Date().getTime();
+        var MyName = "字帖" + new Date().getTime();
         var doc = window.open(MyURL, MyName, strOptions).document;
-        doc.write("<div style='width: " + (82 * row_size) + "px;margin: auto;' id=\"canvas_area\"><canvas width=\"1\" height=\"1\" id=\"cs\">浏览器不支持canvas!<br>建议使用IE9，或火狐、谷歌浏览器。</canvas></div>");
+        doc.write("<div style='width: " + ((canvas_node_width + 2) * row_size) + "px;margin: auto;' id=\"canvas_area\"><canvas width=\"1\" height=\"1\" id=\"cs\">浏览器不支持canvas!<br>建议使用IE9，或火狐、谷歌浏览器。</canvas></div>");
 
         // 下面（第二步）制作字帖。
         var s = 1;
@@ -130,7 +130,7 @@
                 create_br(doc);
                 s = 1;
             } else {
-                create_canvas(doc,words[i], canvas_node_width);
+                create_canvas(doc, words[i], canvas_node_width);
                 if (s >= row_size) {
                     create_br(doc);
                     s = 1;
@@ -145,7 +145,7 @@
     function sleep(milliseconds) {
         var start = new Date().getTime();
         for (var i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds){
+            if ((new Date().getTime() - start) > milliseconds) {
                 break;
             }
         }
@@ -172,7 +172,7 @@
         canvas_area.insertBefore(new_canvas_node, cs);
 
         // 制作字帖
-        make_copy_book(doc,canvas_area_name, word, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow);
+        make_copy_book(doc, canvas_area_name, word, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow);
     }
 
     function make_copy_book(doc, canvas_area_name, word_in_book, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow) {
