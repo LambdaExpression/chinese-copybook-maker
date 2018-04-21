@@ -15,56 +15,74 @@
     <div>
         <div>
             <h2>第一步，在这里输入文本</h2>
-            <textarea id="words_area" cols="50" rows="5" style="margin-left: 30px; width: 100%;">请在这里输入文字！</textarea>
+            <textarea id="words_area" cols="50" rows="5" style="margin-left: 30px; width: 100%;">请在这里输入文字！ Please enter text here!</textarea>
         </div>
         <div>
             <h2>第二步，选择单个格子的大小</h2>
             <p>单位：px（据说一厘米约合28.3px）；默认40px</p>
-            <input id="size_range" type="number" name="copybook_size" max=400 min=1 step=1 value=40
+            <input id="size_range" type="number" name="copybook_size" max=400 min=1 step=1 value=80
                    style="margin-left: 30px; width: 100%;">
         </div>
         <div>
-            <h2>第三步，选择格子的颜色（一般是红色）</h2>
-            <input id="copybook_line_color" type="color" name="copybook_line_color" value="red"
+            <h2>第三步，选择每行格子数量</h2>
+            <input id="row_size" type="number" name="copybook_size" max=400 min=1 step=1 value=11
                    style="margin-left: 30px; width: 100%;">
         </div>
         <div>
-            <h2>第四步，选择汉字的颜色（一般是灰色）</h2>
-            <input id="copybook_word_color" type="color" name="copybook_word_color" value="gray"
+            <h2>第四步，选择格子的颜色（一般是红色）</h2>
+            <input id="copybook_line_color" type="color" name="copybook_line_color" value="#9a0e29"
                    style="margin-left: 30px; width: 100%;">
         </div>
         <div>
-            <h2>第五步，选择书法的风格（默认：楷体）</h2>
+            <h2>第五步，选择汉字的颜色（一般是灰色）</h2>
+            <input id="copybook_word_color" type="color" name="copybook_word_color" value="#b8b8b8"
+                   style="margin-left: 30px; width: 100%;">
+        </div>
+        <div>
+            <h2>第六步，选择书法的风格（默认：楷体）</h2>
+            <!-- KaiTi,KaiTi_GB2312,AR PL UKai CN,simkai,楷体,STKaiti -->
             <input id="copybook_word_style" type="text" name="copybook_word_style"
-                   value="KaiTi,KaiTi_GB2312,AR PL UKai CN,simkai,楷体,STKaiti" style="margin-left: 30px; width: 100%;">
+                   value="Consolas" style="margin-left: 30px; width: 100%;">
             <p>注意：字体的实现依赖系统。<br>如果您的系统没有该字体，本应用将采用系统默认字体。<br>当然，您还可以上网下载并安装那些喜欢的字体。</p>
             <p>下面是一些常用的参考值<br>楷体：KaiTi,KaiTi_GB2312,AR PL UKai CN,simkai,楷体,STKaiti<br>仿宋体：Fangsong,STFangsong</p>
             <p>更多字体的代码可查看您的系统(如Windows里的“控制面板-字体”)，或者参考<a href="http://www.xwbetter.com/font-family/">这里</a>等网络资料，实在不行就百度谷歌一下吧。
             </p>
         </div>
         <div>
-            <h2>第六步，选择字体的虚实（默认：实心）</h2>
+            <h2>第七步，选择字体的虚实（默认：实心）</h2>
             <input type="radio" name="solid_or_hollow" value="solid" checked="checked" style="margin-left: 30px;">实心
             <input type="radio" name="solid_or_hollow" value="hollow" style="margin-left: 30px;">空心
         </div>
         <div>
-            <h2>第七步，点击生成</h2>
+            <h2>第八步，点击生成</h2>
             <button onclick="create_copybook()"
                     style="background-color: #68ee68; width: 300px; height: 50px; font-size: 32px; margin-left: 150px;">
                 生成字帖
             </button>
-            <p>提示：若是对生成的字帖不满意，可点击浏览器“返回”按钮，回到本应用重新设置。</p>
         </div>
     </div>
     <hr>
-    <p>我是李启训，一起来关注<a href="http://www.gnu.org">自由软件</a>运动吧!</p>
+    <!--<p>我是李启训，一起来关注<a href="http://www.gnu.org">自由软件</a>运动吧!</p>-->
 </div>
 
 <script type="text/javascript">
+
+    var canvas_node_width;
+    // 读入每行格子数量设置
+    var row_size;
+    // 读入格子颜色的设置
+    var canvas_line_color;
+    // 读入汉字颜色的设置
+    var canvas_word_color;
+    // 读入汉字风格的设置
+    var canvas_word_style;
+    // 读入字帖汉字的虚实
+    var solid_or_hollow;
+    var num = 0;
+
     function create_copybook() {
         // 首先读入文本框的内容。
-        var words_string = "";
-        words_string = document.getElementById("words_area").value;
+        var words_string = document.getElementById("words_area").value;
         //alert(words_string);
         var words = [];
         //var alert_words_string=words_string.substr(0,1); alert(alert_words_string);
@@ -73,15 +91,17 @@
         }
         //var alert_words = words.join(); alert(alert_words);
         // 读入格子大小的设置
-        var canvas_node_width = parseInt(document.getElementById("size_range").value);
+        canvas_node_width = parseInt(document.getElementById("size_range").value);
+        // 读入每行格子数量设置
+        row_size = parseInt(document.getElementById("row_size").value);
         // 读入格子颜色的设置
-        var canvas_line_color = document.getElementById("copybook_line_color").value;
+        canvas_line_color = document.getElementById("copybook_line_color").value;
         // 读入汉字颜色的设置
-        var canvas_word_color = document.getElementById("copybook_word_color").value;
+        canvas_word_color = document.getElementById("copybook_word_color").value;
         // 读入汉字风格的设置
-        var canvas_word_style = document.getElementById("copybook_word_style").value;
+        canvas_word_style = document.getElementById("copybook_word_style").value;
         // 读入字帖汉字的虚实
-        var solid_or_hollow = "";
+        solid_or_hollow = "";
         (function getStatus() {
             var radio = document.getElementsByName("solid_or_hollow");
             for (var i = 0; i < radio.length; i++) {
@@ -93,33 +113,70 @@
         }());
 
         //准备页面
-        document.write("<div id=\"canvas_area\"><canvas width=\"1\" height=\"1\" id=\"cs\">浏览器不支持canvas!<br>建议使用IE9，或火狐、谷歌浏览器。</canvas></div>");
+        var strOptions = "";
+        var MyURL = '';
+        var MyName = "字帖"+new Date().getTime();
+        var doc = window.open(MyURL, MyName, strOptions).document;
+        doc.write("<div style='width: " + (82 * row_size) + "px;margin: auto;' id=\"canvas_area\"><canvas width=\"1\" height=\"1\" id=\"cs\">浏览器不支持canvas!<br>建议使用IE9，或火狐、谷歌浏览器。</canvas></div>");
 
         // 下面（第二步）制作字帖。
+        var s = 1;
         for (var i = 0; i < words.length; i++) {
-            var canvas_area_name = "word_" + i;
-            //alert(canvas_area_name);
-
-            // 需要创建一个<canvas>标签
-            var new_canvas_node = document.createElement("canvas");
-            new_canvas_node.width = canvas_node_width + 2;
-            new_canvas_node.height = canvas_node_width + 2;
-            new_canvas_node.id = canvas_area_name;
-            var new_canvas_text_node = document.createTextNode(words[i]);
-            new_canvas_node.appendChild(new_canvas_text_node);
-            var canvas_area = document.getElementById("canvas_area");
-            var cs = document.getElementById("cs")
-            canvas_area.insertBefore(new_canvas_node, cs);
-
-            // 制作字帖
-            make_copy_book(canvas_area_name, words[i], canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow);
-            //alert("会话完成！下面是画另一个。");
+            if (words[i] === '\n') {
+                while (s <= row_size) {
+                    create_canvas(doc, " ", canvas_node_width);
+                    s++;
+                }
+                create_br(doc);
+                s = 1;
+            } else {
+                create_canvas(doc,words[i], canvas_node_width);
+                if (s >= row_size) {
+                    create_br(doc);
+                    s = 1;
+                } else {
+                    s++;
+                }
+            }
         }
         return false;
-    };
+    }
 
-    function make_copy_book(canvas_area_name, word_in_book, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow) {
-        var oCanvas = document.getElementById(canvas_area_name);
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+                break;
+            }
+        }
+    }
+
+    function create_br(doc) {
+        var canvas_area = doc.getElementById("canvas_area");
+        var new_canvas_node = doc.createElement("br");
+        var cs = doc.getElementById("cs");
+        canvas_area.insertBefore(new_canvas_node, cs);
+    }
+
+    function create_canvas(doc, word) {
+        var canvas_area_name = num++ + '';
+        var canvas_area = doc.getElementById("canvas_area");
+        var cs = doc.getElementById("cs");
+        // 需要创建一个<canvas>标签
+        var new_canvas_node = doc.createElement("canvas");
+        new_canvas_node.width = canvas_node_width + 2;
+        new_canvas_node.height = canvas_node_width + 2;
+        new_canvas_node.id = canvas_area_name;
+        var new_canvas_text_node = doc.createTextNode(word);
+        new_canvas_node.appendChild(new_canvas_text_node);
+        canvas_area.insertBefore(new_canvas_node, cs);
+
+        // 制作字帖
+        make_copy_book(doc,canvas_area_name, word, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow);
+    }
+
+    function make_copy_book(doc, canvas_area_name, word_in_book, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow) {
+        var oCanvas = doc.getElementById(canvas_area_name);
         if (oCanvas.getContext) {
             var ctx = oCanvas.getContext('2d'),
                 w = oCanvas.width - 2,   //边长
